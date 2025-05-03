@@ -15,11 +15,13 @@ class SocialLoginRow extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _socialButton('assets/104498_facebook_icon.png'),
+            _socialButton(
+              'assets/icons/11244080_x_twitter_elon musk_twitter new logo_icon.png',
+            ),
             const SizedBox(width: 20),
-            _socialButton('assets/7123025_logo_google_g_icon.png'),
+            _socialButton('assets/icons/7123025_logo_google_g_icon.png'),
             const SizedBox(width: 20),
-            _socialButton('assets/11244080_x_twitter_elon musk_twitter new logo_icon.png'),
+            _socialButton('assets/icons/104498_facebook_icon.png'),
           ],
         ),
       ],
@@ -36,7 +38,7 @@ class SocialLoginRow extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Image.asset(asset),
+        child: Image.asset(asset, fit: BoxFit.scaleDown, color: Colors.white),
       ),
     );
   }

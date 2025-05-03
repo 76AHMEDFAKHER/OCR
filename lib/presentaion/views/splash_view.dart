@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ocr/presentaion/views/getStarted_view.dart';
-import 'package:ocr/presentaion/views/home_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -51,7 +50,7 @@ class _SplashViewState extends State<SplashView>
         opacity: _animation,
         child: Center(
           child: Image.asset(
-            'assets/images/Screenshot 2025-04-10 112820.png',
+            'assets/images/photo3.png',
             width: 500,
             height: 200,
             fit: BoxFit.cover,

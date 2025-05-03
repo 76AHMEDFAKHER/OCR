@@ -49,9 +49,7 @@ class GetStarted extends StatelessWidget {
                       backgroundColor: AppColors.secondary,
                     ),
                     onPressed: () {
-                      context.go(
-                        '/lib/screens/signup_screen.dart',
-                      ); // If using go_router
+                      context.go('/signup'); // If using go_router
                       // Navigator.pushReplacementNamed(context, '/home'); // If using Navigator
                     },
                     child: const Text(

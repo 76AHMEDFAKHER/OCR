@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView({super.key});
@@ -43,6 +49,24 @@ class _CameraViewState extends State<CameraView> {
     super.dispose();
   }
 
+  Future<String> extractTextFromXFile(XFile imageFile) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      // This is where you send to Supabase
+      final response = await Supabase.instance.client.functions.invoke(
+        'ocr', // Your Supabase function name
+        body: {'image_base64': 'data:image/jpeg;base64,$base64Image'},
+      );
+
+      return response.data['text'] ?? 'No text detected';
+    } catch (e) {
+      print('OCR Error: $e');
+      throw Exception('OCR processing failed: ${e.toString()}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,15 +80,16 @@ class _CameraViewState extends State<CameraView> {
         children: [
           // Display the camera preview if the camera is initialized
           if (_isCameraInitialized)
-            CameraPreview(_cameraController)
+            SizedBox.expand(child: CameraPreview(_cameraController))
           else
             const Center(child: CircularProgressIndicator(color: Colors.white)),
+
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+              width: double.infinity,
               color: Colors.black.withOpacity(0.8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,11 +102,65 @@ class _CameraViewState extends State<CameraView> {
                   ),
                   IconButton(
                     onPressed: () async {
-                      // Capture an image
-                      if (_cameraController.value.isInitialized) {
-                        final image = await _cameraController.takePicture();
-                        // Handle the captured image (e.g., save or display it)
-                        print('Image captured: ${image.path}');
+                      if (!_cameraController.value.isInitialized) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Camera not ready')),
+                        );
+                        return;
+                      }
+
+                      try {
+                        // Capture image
+                        final XFile image =
+                            await _cameraController.takePicture();
+                        print('Image path: ${image.path}');
+
+                        // Show loading indicator
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Processing image...')),
+                        );
+
+                        // Read image as bytes
+                        final bytes = await image.readAsBytes();
+                        final base64Image = base64Encode(bytes);
+
+                        // Prepare the request
+                        final response = await http.post(
+                          Uri.parse(
+                            'https://mmkrtiqfogqgjpqxhipw.supabase.co/functions/v1/ocr',
+                          ),
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer YOUR_SUPABASE_ANON_KEY',
+                          },
+                          body: jsonEncode({
+                            'image_base64':
+                                'data:image/jpeg;base64,$base64Image',
+                          }),
+                        );
+
+                        // Handle response
+                        if (response.statusCode == 200) {
+                          final result = jsonDecode(response.body);
+                          print('OCR Result: $result');
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Extracted text: ${result['text']}',
+                              ),
+                            ),
+                          );
+                        } else {
+                          throw Exception(
+                            'Failed with status ${response.statusCode}',
+                          );
+                        }
+                      } catch (e) {
+                        print('Error: $e');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${e.toString()}')),
+                        );
                       }
                     },
                     icon: const Icon(

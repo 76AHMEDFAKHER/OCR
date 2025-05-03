@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug OCR Function",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "deno",
+        "runtimeArgs": [
+          "run",
+          "--inspect-brk",
+          "--allow-all",
+          "index.ts"
+        ],
+        "cwd": "${workspaceFolder}/supabase/functions/ocr",
+        "port": 9229
+      }
+    ]
+  }

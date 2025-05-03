@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ocr/core/services/auth/auth_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/social_login_row.dart';
 
@@ -12,6 +14,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final authService = AuthService();
   bool _obscurePassword = true;
 
   @override
@@ -27,9 +30,25 @@ class _SignInScreenState extends State<SignInScreen> {
     });
   }
 
+  void login(BuildContext context) async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+    try {
+      await authService.signInWithEmailPassword(email, password);
+      context.go('/home');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -39,7 +58,12 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 const SizedBox(height: 40),
                 // App Logo
-                Center(child: Image.asset('assets/app_logo.png', height: 80)),
+                Center(
+                  child: Image.asset(
+                    'assets/images/Asset 1@2x.png',
+                    height: 80,
+                  ),
+                ),
                 const SizedBox(height: 30),
                 // Sign in text
                 const Text(
@@ -81,7 +105,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 30),
                 // Login button
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    login(context);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
                     foregroundColor: Colors.black,
@@ -104,9 +130,12 @@ class _SignInScreenState extends State<SignInScreen> {
                       "Don't have an account?",
                       style: TextStyle(color: Colors.grey),
                     ),
-                    TextButton(
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateColor.transparent,
+                      ),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/signup');
+                        context.go('/signup'); // If using go_router
                       },
                       child: const Text(
                         'Register',

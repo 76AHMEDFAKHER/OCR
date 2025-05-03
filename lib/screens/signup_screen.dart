@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocr/constant.dart';
+import 'package:ocr/core/services/auth/auth_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/social_login_row.dart';
 
@@ -17,6 +20,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _lastNameController = TextEditingController();
   bool _obscurePassword = true;
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  final authService = AuthService();
+
+  void signUp(BuildContext context) async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please fill in all fields')));
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Password Doesn\'t match')));
+      return;
+    }
+
+    try {
+      await authService.signUpWithEmailPassword(email, password);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Registration successful!')));
+      context.go(
+        '/signin',
+      ); // Navigate to the sign-in screen after successful registration
+    } catch (e) {
+      log('❌ Problem at signing up: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Something went wrong: $e')));
+    }
+  }
 
   @override
   void dispose() {
@@ -42,9 +83,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
+              spacing: 20.0,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
                 // App Logo
                 Center(
                   child: Image.asset(
@@ -52,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 80,
                   ),
                 ),
-                const SizedBox(height: 30),
+
                 // Sign up text
                 const Text(
                   'Sign up',
@@ -62,26 +103,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 40),
-                // First name field
-                CustomTextField(
-                  label: 'First Name',
-                  controller: _firstNameController,
-                ),
-                const SizedBox(height: 20),
-                // Last name field
-                CustomTextField(
-                  label: 'Last Name',
-                  controller: _lastNameController,
-                ),
-                const SizedBox(height: 20),
+
                 // Email field
                 CustomTextField(
                   label: 'Email',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 20),
+
                 // Password field
                 CustomTextField(
                   label: 'Password',
@@ -90,11 +119,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   obscureText: _obscurePassword,
                   onToggleVisibility: _togglePasswordVisibility,
                 ),
-                const SizedBox(height: 40),
+
+                CustomTextField(
+                  label: 'Confirm Password',
+                  isPassword: true,
+                  controller: _confirmPasswordController,
+                  obscureText: _obscurePassword,
+                  onToggleVisibility: _togglePasswordVisibility,
+                ),
                 // Register button
                 ElevatedButton(
                   onPressed: () {
-                    context.go('/home'); // If using go_router
+                    signUp(context); // If using go_router
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
@@ -118,13 +154,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       "Have an account?",
                       style: TextStyle(color: Colors.grey),
                     ),
-                    TextButton(
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateColor.transparent,
+                      ),
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/signin');
+                        context.go('/signin'); // If using go_router
                       },
                       child: const Text(
                         'Log in',
-                        style: TextStyle(color: Colors.amber),
+                        style: TextStyle(
+                          color: Colors.amber,
+
+                          backgroundColor: Colors.black,
+                        ),
                       ),
                     ),
                   ],

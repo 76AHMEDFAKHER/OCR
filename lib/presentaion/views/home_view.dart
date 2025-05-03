@@ -5,26 +5,6 @@ import 'package:ocr/constant.dart';
 
 class HomeView extends StatefulWidget {
   HomeView({super.key});
-  static List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: GoogleFonts.anton(
-        textStyle: TextStyle(color: AppColors.secondary),
-      ),
-    ),
-    Text(
-      'Index 1: Business',
-      style: GoogleFonts.anton(
-        textStyle: TextStyle(color: AppColors.secondary),
-      ),
-    ),
-    Text(
-      'Index 2: School',
-      style: GoogleFonts.anton(
-        textStyle: TextStyle(color: AppColors.secondary),
-      ),
-    ),
-  ];
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -32,10 +12,26 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int selectedIndex = 0;
+  List<Widget> boxes = [];
 
   void _onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
+    });
+  }
+
+  void _addbox() {
+    setState(() {
+      boxes.add(
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.accent2,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          height: 150,
+          width: 150,
+        ),
+      );
     });
   }
 
@@ -53,11 +49,7 @@ class _HomeViewState extends State<HomeView> {
               decoration: BoxDecoration(color: AppColors.primary),
               child: Stack(
                 children: [
-                  ImageIcon(
-                    AssetImage(
-                      'assets/images/Screenshot 2025-04-10 112820.png',
-                    ),
-                  ),
+                  ImageIcon(AssetImage('assets/images/photo3.png')),
                   Text('Drawer Header'),
                 ],
               ),
@@ -146,84 +138,41 @@ class _HomeViewState extends State<HomeView> {
               ),
             ],
           ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 300),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  height: 150,
-                  width: 150,
-                  child: Icon(Icons.car_crash_outlined),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 300),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  height: 150,
-                  width: 150,
-                  child: Icon(Icons.wash),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 50),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 300),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  height: 150,
-                  width: 150,
-                  child: Icon(Icons.car_crash_outlined),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 300),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  height: 150,
-                  width: 150,
-                  child: Icon(Icons.car_crash_outlined),
-                ),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(left: 50, right: 50, top: 250),
+            child: GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 20,
+              children: [
+                Categories(boxicon: Icons.emoji_transportation),
+                Categories(boxicon: Icons.blinds_closed_sharp),
+                Categories(boxicon: Icons.integration_instructions_rounded),
+                Categories(boxicon: Icons.event_busy_rounded),
+              ],
+            ),
           ),
 
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.accent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                height: 150,
-                width: 150,
-                child: Icon(Icons.add_circle_outline),
-              ),
-            ],
-          ),
+          // GridView with Add Button
         ],
       ),
+    );
+  }
+}
+
+class Categories extends StatelessWidget {
+  Categories({super.key, required this.boxicon});
+  IconData boxicon;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: AppColors.secondary,
+      ),
+      height: 100,
+      width: 100,
+      child: Icon(Icons.category),
     );
   }
 }

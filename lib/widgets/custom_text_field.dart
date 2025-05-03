@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ocr/constant.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -25,8 +26,18 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       style: const TextStyle(color: Colors.white),
+      cursorColor: AppColors.accent,
       decoration: InputDecoration(
+        focusColor: AppColors.accent,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColors.secondary),
+        ),
         labelText: label.toUpperCase(),
+        labelStyle: TextStyle(color: AppColors.secondary),
         suffixIcon:
             isPassword
                 ? IconButton(
