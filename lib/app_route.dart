@@ -39,7 +39,7 @@ class AppRoute {
       GoRoute(
         path: '/camera',
         name: 'camera',
-        builder: (context, state) => CameraView(),
+        builder: (context, state) => OCRScreen(),
       ),
     ],
   );
