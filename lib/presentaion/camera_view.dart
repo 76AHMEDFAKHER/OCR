@@ -54,7 +54,7 @@ class _OCRScreenState extends State<OCRScreen> {
 
     try {
       final result = await OCRService.extractText(File(pickedFile.path));
-      setState(() => _extractedText = result['text']);
+      setState(() => _extractedText = result['text']); // Display the extracted text
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -179,6 +179,7 @@ class _OCRScreenState extends State<OCRScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
+                            textAlign: TextAlign.center,
                             'Extracted Text:',
                             style: TextStyle(
                               color: Colors.grey.shade800,
@@ -187,17 +188,19 @@ class _OCRScreenState extends State<OCRScreen> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          Text(
-                            _extractedText.isEmpty
-                                ? 'Captured text will appear here...'
-                                : _extractedText,
-                            style: TextStyle(
-                              color:
-                                  _extractedText.isEmpty
-                                      ? Colors.grey.shade500
-                                      : Colors.black87,
-                              fontSize: 16,
-                              height: 1.5,
+                          Center(
+                            child: Text(
+                              _extractedText.isEmpty
+                                  ? 'Captured text will appear here...'
+                                  : _extractedText,
+                              style: TextStyle(
+                                color:
+                                    _extractedText.isEmpty
+                                        ? Colors.grey.shade500
+                                        : Colors.black87,
+                                fontSize: 16,
+                                height: 1.5,
+                              ),
                             ),
                           ),
                         ],
